@@ -12,6 +12,8 @@ namespace AppService.Tables
         public string? Name { get; set; }
         public string? Rut { get; set; }
 
+        public Person() { }
+
         public Person(string name, string rut)
         {
 

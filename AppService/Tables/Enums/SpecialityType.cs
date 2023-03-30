@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppService.Tables
+namespace AppService.Tables.Enums
 {
     public enum SpecialtyType
     {

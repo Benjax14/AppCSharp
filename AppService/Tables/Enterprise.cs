@@ -12,6 +12,8 @@ namespace AppService.Tables
         public string? Name { get; set; }
         public string? Rut { get; set; }
 
+
+        public Enterprise() { }
         public Enterprise(string name, string rut)
         {
 
