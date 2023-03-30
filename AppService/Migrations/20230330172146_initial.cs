@@ -51,14 +51,14 @@ namespace AppService.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    NameBook = table.Column<string>(type: "longtext", nullable: true)
+                    Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    TypeBook = table.Column<int>(type: "int", nullable: true),
-                    PagesCount = table.Column<int>(type: "int", nullable: true),
-                    PublicationDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    OnlineAvailable = table.Column<bool>(type: "tinyint(1)", nullable: true),
-                    AuthorBookId = table.Column<int>(type: "int", nullable: true),
-                    EditorialId = table.Column<int>(type: "int", nullable: true)
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Pages = table.Column<int>(type: "int", nullable: false),
+                    PublicationDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    OnlineAvailable = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    AuthorId = table.Column<int>(type: "int", nullable: false),
+                    EditorialId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -68,20 +68,20 @@ namespace AppService.Migrations
                         column: x => x.EditorialId,
                         principalTable: "Enterprise",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Book_Person_AuthorBookId",
-                        column: x => x.AuthorBookId,
+                        name: "FK_Book_Person_AuthorId",
+                        column: x => x.AuthorId,
                         principalTable: "Person",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Book_AuthorBookId",
+                name: "IX_Book_AuthorId",
                 table: "Book",
-                column: "AuthorBookId");
+                column: "AuthorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Book_EditorialId",

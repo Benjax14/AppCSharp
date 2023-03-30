@@ -23,30 +23,31 @@ namespace AppService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("AuthorBookId")
+                    b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EditorialId")
+                    b.Property<int>("EditorialId")
                         .HasColumnType("int");
 
-                    b.Property<string>("NameBook")
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<bool?>("OnlineAvailable")
+                    b.Property<bool>("OnlineAvailable")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int?>("PagesCount")
+                    b.Property<int>("Pages")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("PublicationDate")
+                    b.Property<DateTime>("PublicationDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int?>("TypeBook")
+                    b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorBookId");
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("EditorialId");
 
@@ -89,15 +90,19 @@ namespace AppService.Migrations
 
             modelBuilder.Entity("AppService.Tables.Book", b =>
                 {
-                    b.HasOne("AppService.Tables.Person", "AuthorBook")
+                    b.HasOne("AppService.Tables.Person", "Author")
                         .WithMany()
-                        .HasForeignKey("AuthorBookId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AppService.Tables.Enterprise", "Editorial")
                         .WithMany()
-                        .HasForeignKey("EditorialId");
+                        .HasForeignKey("EditorialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("AuthorBook");
+                    b.Navigation("Author");
 
                     b.Navigation("Editorial");
                 });

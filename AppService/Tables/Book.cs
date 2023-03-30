@@ -10,13 +10,15 @@ namespace AppService.Tables
     public class Book
     {
         public int Id {  get; set; }
-        public string? NameBook { get; set; } //Field
-        public SpecialtyType? TypeBook { get; set; }
-        public int? PagesCount { get; set; }
-        public DateTime? PublicationDate { get; set; }
-        public bool? OnlineAvailable { get; set; }
-        public Person AuthorBook { get; set; }
+        public string Name { get; set; } //Field
+        public SpecialtyType Type { get; set; }
+        public int Pages { get; set; }
+        public DateTime PublicationDate { get; set; }
+        public bool OnlineAvailable { get; set; }
+        public Person Author { get; set; }
+        public int AuthorId { get; set; }
         public Enterprise Editorial { get; set; }
+        public int EditorialId { get; set; }
 
         public Book()
         {
@@ -24,12 +26,12 @@ namespace AppService.Tables
         // Constructor
         public Book(string name, SpecialtyType subject, int pages, DateTime date, bool available, Person author, Enterprise editorial)
         {
-            NameBook = name;
-            TypeBook = subject;
-            PagesCount = pages;
+            Name = name;
+            Type = subject;
+            Pages = pages;
             PublicationDate = date;
             OnlineAvailable = available;
-            AuthorBook = author;
+            Author = author;
             Editorial = editorial;
         }
     }
