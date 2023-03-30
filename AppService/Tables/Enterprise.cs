@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppService
+namespace AppService.Tables
 {
     public class Enterprise
     {
-        public string Name { get; set; }
-        public string Rut { get; set; }
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Rut { get; set; }
 
         public Enterprise(string name, string rut)
         {
