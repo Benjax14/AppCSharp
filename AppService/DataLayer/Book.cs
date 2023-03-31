@@ -72,8 +72,8 @@ namespace AppService.DataLayer
 
         private static List<Tables.Book> ApplyPagination(List<Tables.Book> books, RequestGet request)
         {
-            int pageIndex = (int)request.PageIndex;
-            int pageSize = (int)request.PageSize;
+            int pageIndex = request.PageIndex.Value;
+            int pageSize = request.PageSize.Value;
 
             return books.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
         }
