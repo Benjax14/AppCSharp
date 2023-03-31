@@ -1,6 +1,7 @@
 ﻿using AppService.DataLayer;
 using AppService.Tables;
 using AppService.Tables.Enums;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace AppService
 {
@@ -12,9 +13,12 @@ namespace AppService
             var dbContext = new AppDbContext();
             //PoblateDatabase(dbContext);
 
-            var request = new RequestGet();
+            var request = new RequestGet()
+            {
+                OrderDirection = OrderDirection.Descending,
+            };
 
-            var response = DataLayer.Book.GetBook(request);
+            var response = DataLayer.Book.GetBook(request,dbContext);
 
             foreach (var book in (List<Tables.Book>)response.Items["Records"])
             {
