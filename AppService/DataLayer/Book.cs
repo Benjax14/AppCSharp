@@ -11,7 +11,7 @@ namespace AppService.DataLayer
 {
     public class Book
     {
-        public static Response GetBook(RequestGet request, AppDbContext dbContext)
+        public static Response Get(RequestGet request, AppDbContext dbContext)
         {
             var books = dbContext.Book.Include(b => b.Author).Include(b => b.Editorial).ToList();
 
@@ -122,7 +122,7 @@ namespace AppService.DataLayer
             return books;
         }
 
-        public static Response SaveBook(RequestSave request, AppDbContext dbContext)
+        public static Response Save(RequestSave request, AppDbContext dbContext)
         {
             try
             {
@@ -146,7 +146,7 @@ namespace AppService.DataLayer
             }
         }
 
-        public static Response DeleteBook(RequestDelete request, AppDbContext dbContext)
+        public static Response Delete(RequestDelete request, AppDbContext dbContext)
         {
             try
             {

@@ -18,7 +18,7 @@ namespace AppService
                 OrderDirection = OrderDirection.Descending,
             };
 
-            var response = DataLayer.Book.GetBook(request,dbContext);
+            var response = DataLayer.Book.Get(request,dbContext);
 
             foreach (var book in (List<Tables.Book>)response.Items["Records"])
             {
