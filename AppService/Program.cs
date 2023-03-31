@@ -16,7 +16,7 @@ namespace AppService
 
             var response = DataLayer.Book.GetBook(request);
 
-            foreach (var book in response.Books)
+            foreach (var book in (List<Tables.Book>)response.Items["Records"])
             {
                 Console.WriteLine("{0} - {1} ({2})", book.Name, book.Author.Name, book.Editorial.Name);
             }

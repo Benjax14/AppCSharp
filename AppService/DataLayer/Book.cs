@@ -14,10 +14,9 @@ namespace AppService.DataLayer
             var dbContext = new AppDbContext();
             var books = dbContext.Book.Include(b => b.Author).Include(b => b.Editorial).ToList();
 
-            var response = new Response
-            {
-                Books = books,
-            };
+            var response = new Response();
+
+            response.Items.Add("Records", books);
 
             return response;
         }
