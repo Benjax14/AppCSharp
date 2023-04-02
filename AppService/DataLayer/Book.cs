@@ -140,7 +140,35 @@ namespace AppService.DataLayer
                         }
 
                         break;
-                        
+                    case nameof(Tables.Book.Pages):
+
+                        var page = int.Parse(filter.Value);
+
+                        switch (filter.Comparer)
+                        {
+
+                            case Comparer.Equal:
+                                books = books.Where(o => o.Pages == page).ToList();
+                                break;
+                            case Comparer.NotEqual:
+                                books = books.Where(o => o.Pages != page).ToList();
+                                break;
+                            case Comparer.Greater:
+                                books = books.Where(o => o.Pages > page).ToList();
+                                break;
+                            case Comparer.GreaterOrEqual:
+                                books = books.Where(o => o.Pages >= page).ToList();
+                                break;
+                            case Comparer.Lower:
+                                books = books.Where(o => o.Pages < page).ToList();
+                                break;
+                            case Comparer.LowerOrEqual:
+                                books = books.Where(o => o.Pages <= page).ToList();
+                                break;
+
+                        }
+                        break;
+
                 }
             }
             return books;
