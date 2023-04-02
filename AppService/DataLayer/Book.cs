@@ -108,15 +108,39 @@ namespace AppService.DataLayer
                                 books = books.Where(o => o.PublicationDate > date).ToList();
                                 break;
                             case Comparer.GreaterOrEqual:
+                                books = books.Where(o =>o.PublicationDate >= date).ToList();
                                 break;
                             case Comparer.Lower:
+                                books = books.Where(o =>o.PublicationDate < date).ToList();
                                 break;
                             case Comparer.LowerOrEqual:
+                                books = books.Where(o => o.PublicationDate <= date).ToList();
                                 break;
                             default:
                                 break;
                         }
                         break;
+                    case nameof(Tables.Book.OnlineAvailable):
+
+                        if (filter.Equals(true))
+                            books = books.Where(o => o.OnlineAvailable == true).ToList();
+                        else
+                            books = books.Where(o => o.OnlineAvailable == false).ToList();
+
+                        break;
+                    case nameof(Tables.Book.Type):
+
+                        if (filter.Comparer == Comparer.Equal)
+                        {
+                            Type typeFilter = Type.GetType(filter.Value);
+                            if (typeFilter != null && typeFilter.IsEnum) 
+                                books = books.Where(o => o.Type.GetType() == typeFilter).ToList();
+                            else
+                                return books;
+                        }
+
+                        break;
+                        
                 }
             }
             return books;
