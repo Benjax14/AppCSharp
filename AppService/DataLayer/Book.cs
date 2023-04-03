@@ -13,15 +13,16 @@ namespace AppService.DataLayer
     {
         public static Response Get(RequestGet request, AppDbContext dbContext)
         {
-            var books = dbContext.Book.Include(b => b.Author).Include(b => b.Editorial).ToList();
+            var query = dbContext.Book.Include(b => b.Author).Include(b => b.Editorial).AsQueryable();
 
-            books = ApplySorting(books, request);
-            books = ApplyFilters(books, request);
+            query = ApplySorting(query, request);
+            query = ApplyFilters(query, request);
+            query = ApplyPagination(query, request);
+
+            var books = query.ToList();
 
             int totalRecords = books.Count;
             int totalPages = (int)Math.Ceiling((decimal)(totalRecords / request.PageSize));
-
-            books = ApplyPagination(books, request);
 
             var response = new Response();
 
@@ -38,7 +39,7 @@ namespace AppService.DataLayer
             return response;
         }
 
-        private static List<Tables.Book> ApplySorting(List<Tables.Book> books, RequestGet request)
+        private static IQueryable<Tables.Book> ApplySorting(IQueryable<Tables.Book> query, RequestGet request)
         {
             if(request.OrderProperty == null)
             {
@@ -49,48 +50,48 @@ namespace AppService.DataLayer
             
                 case nameof(Tables.Book.Id):
                     if (request.OrderDirection == OrderDirection.Ascending)
-                        books = books.OrderBy(b => b.Id).ToList();
+                        query = query.OrderBy(b => b.Id);
                     else
-                        books = books.OrderByDescending(o => o.Id).ToList();
+                        query = query.OrderByDescending(o => o.Id);
                     break;
                 case nameof(Tables.Book.Name):
                     if(request.OrderDirection == OrderDirection.Ascending)
-                        books = books.OrderBy(b => b.Name).ToList();
+                        query = query.OrderBy(b => b.Name);
                     else
-                        books = books.OrderByDescending(o => o.Name).ToList();
+                        query = query.OrderByDescending(o => o.Name);
                     break;
                 case nameof(Tables.Book.Type):
                     if(request.OrderDirection == OrderDirection.Ascending)
-                        books = books.OrderBy(b => b.Type).ToList();
+                        query = query.OrderBy(b => b.Type);
                     else
-                        books = books.OrderByDescending(o => o.Type).ToList();
+                        query = query.OrderByDescending(o => o.Type);
                     break;
                 case nameof(Tables.Book.PublicationDate):
                     if(request.OrderDirection == OrderDirection.Ascending)
-                        books = books.OrderBy(b => b.PublicationDate).ToList();
+                        query = query.OrderBy(b => b.PublicationDate);
                     else
-                        books = books.OrderByDescending(b => b.PublicationDate).ToList();
+                        query = query.OrderByDescending(b => b.PublicationDate);
                     break;
                 case nameof(Tables.Book.OnlineAvailable):
                     if (request.OrderDirection == OrderDirection.Ascending)
-                        books = books.OrderBy(b => b.OnlineAvailable).ToList();
+                        query = query.OrderBy(b => b.OnlineAvailable);
                     else
-                        books = books.OrderByDescending(b => b.OnlineAvailable).ToList();
+                        query = query.OrderByDescending(b => b.OnlineAvailable);
                     break;
             }
         
-            return books;
+            return query;
         }
 
-        private static List<Tables.Book> ApplyPagination(List<Tables.Book> books, RequestGet request)
+        private static IQueryable<Tables.Book> ApplyPagination(IQueryable<Tables.Book> books, RequestGet request)
         {
             int pageIndex = request.PageIndex ?? 1;
             int pageSize = request.PageSize ?? 1;
 
-            return books.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+            return books.Skip((pageIndex - 1) * pageSize).Take(pageSize);
         }
 
-        private static List<Tables.Book> ApplyFilters(List<Tables.Book> books, RequestGet request)
+        private static IQueryable<Tables.Book> ApplyFilters(IQueryable<Tables.Book> books, RequestGet request)
         {
             if (request.Filters == null) return books;
 
@@ -100,9 +101,9 @@ namespace AppService.DataLayer
 
                     case nameof(Tables.Book.Name):
                         if(filter.Comparer == Comparer.Equal)
-                            books = books.Where(o => o.Name == filter.Value).ToList();
+                            books = books.Where(o => o.Name == filter.Value);
                         else
-                            books = books.Where(o => o.Name.Contains(filter.Value)).ToList();
+                            books = books.Where(o => o.Name.Contains(filter.Value));
                         break;
                     case nameof(Tables.Book.PublicationDate):
 
@@ -111,22 +112,22 @@ namespace AppService.DataLayer
                         switch (filter.Comparer)
                         {
                             case Comparer.Equal:
-                                books = books.Where(o => o.PublicationDate == date).ToList();
+                                books = books.Where(o => o.PublicationDate == date);
                                 break;
                             case Comparer.NotEqual:
-                                books = books.Where(o => o.PublicationDate != date).ToList();
+                                books = books.Where(o => o.PublicationDate != date);
                                 break;
                             case Comparer.Greater:
-                                books = books.Where(o => o.PublicationDate > date).ToList();
-                                break;
+                                books = books.Where(o => o.PublicationDate > date);
+                                break;  
                             case Comparer.GreaterOrEqual:
-                                books = books.Where(o =>o.PublicationDate >= date).ToList();
+                                books = books.Where(o => o.PublicationDate >= date);
                                 break;
                             case Comparer.Lower:
-                                books = books.Where(o =>o.PublicationDate < date).ToList();
+                                books = books.Where(o => o.PublicationDate < date);
                                 break;
                             case Comparer.LowerOrEqual:
-                                books = books.Where(o => o.PublicationDate <= date).ToList();
+                                books = books.Where(o => o.PublicationDate <= date);
                                 break;
                             default:
                                 break;
@@ -135,9 +136,9 @@ namespace AppService.DataLayer
                     case nameof(Tables.Book.OnlineAvailable):
 
                         if (filter.Equals(true))
-                            books = books.Where(o => o.OnlineAvailable == true).ToList();
+                            books = books.Where(o => o.OnlineAvailable == true);
                         else
-                            books = books.Where(o => o.OnlineAvailable == false).ToList();
+                            books = books.Where(o => o.OnlineAvailable == false);
 
                         break;
                     case nameof(Tables.Book.Type):
@@ -146,7 +147,7 @@ namespace AppService.DataLayer
                         {
                             Type typeFilter = Type.GetType(filter.Value);
                             if (typeFilter != null && typeFilter.IsEnum) 
-                                books = books.Where(o => o.Type.GetType() == typeFilter).ToList();
+                                books = books.Where(o => o.Type.GetType() == typeFilter);
                             else
                                 return books;
                         }
@@ -160,22 +161,22 @@ namespace AppService.DataLayer
                         {
 
                             case Comparer.Equal:
-                                books = books.Where(o => o.Pages == page).ToList();
+                                books = books.Where(o => o.Pages == page);
                                 break;
                             case Comparer.NotEqual:
-                                books = books.Where(o => o.Pages != page).ToList();
+                                books = books.Where(o => o.Pages != page);
                                 break;
                             case Comparer.Greater:
-                                books = books.Where(o => o.Pages > page).ToList();
+                                books = books.Where(o => o.Pages > page);
                                 break;
                             case Comparer.GreaterOrEqual:
-                                books = books.Where(o => o.Pages >= page).ToList();
+                                books = books.Where(o => o.Pages >= page);
                                 break;
                             case Comparer.Lower:
-                                books = books.Where(o => o.Pages < page).ToList();
+                                books = books.Where(o => o.Pages < page);
                                 break;
                             case Comparer.LowerOrEqual:
-                                books = books.Where(o => o.Pages <= page).ToList();
+                                books = books.Where(o => o.Pages <= page);
                                 break;
 
                         }
