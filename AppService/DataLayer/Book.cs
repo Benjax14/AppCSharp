@@ -18,7 +18,8 @@ namespace AppService.DataLayer
             books = ApplySorting(books, request);
             books = ApplyFilters(books, request);
 
-            int totalPages = books.Sum(o => o.Pages);
+            int totalRecords = books.Count;
+            int totalPages = (int)Math.Ceiling((decimal)(totalRecords / request.PageSize));
 
             books = ApplyPagination(books, request);
 
@@ -26,7 +27,13 @@ namespace AppService.DataLayer
 
             response.Items.Add("Records", books);
 
-            response.TotalPages = totalPages;
+            var summary = new
+            {
+                TotalPages = books.Sum(b => b.Pages)
+            };
+
+            response.Items.Add("Summary", summary);
+
 
             return response;
         }

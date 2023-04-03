@@ -27,7 +27,7 @@ namespace AppService
                 Console.WriteLine("{0} - {1} ({2})", book.Name, book.Author.Name, book.Editorial.Name);
             }
 
-            Console.WriteLine("Total Pages: {0}", response.TotalPages);
+            Console.WriteLine(response.Items["Summary"]);
 
             Console.ReadLine();
         }
