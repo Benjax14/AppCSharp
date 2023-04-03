@@ -18,6 +18,7 @@ namespace AppService
 		/// Tambien podemos agregar un "Error" y un mensaje de error.
 		/// </summary>
 		public Dictionary<string, object> Items { get; set; }
+		public int TotalPages { get; set; }
 
 		public Response()
 		{

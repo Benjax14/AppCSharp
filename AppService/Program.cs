@@ -16,6 +16,8 @@ namespace AppService
             var request = new RequestGet()
             {
                 OrderDirection = OrderDirection.Descending,
+                PageIndex = 1,
+                PageSize = 100,
             };
 
             var response = DataLayer.Book.Get(request,dbContext);
@@ -24,6 +26,8 @@ namespace AppService
             {
                 Console.WriteLine("{0} - {1} ({2})", book.Name, book.Author.Name, book.Editorial.Name);
             }
+
+            Console.WriteLine("Total Pages: {0}", response.TotalPages);
 
             Console.ReadLine();
         }

@@ -16,12 +16,17 @@ namespace AppService.DataLayer
             var books = dbContext.Book.Include(b => b.Author).Include(b => b.Editorial).ToList();
 
             books = ApplySorting(books, request);
-            books = ApplyPagination(books, request);
             books = ApplyFilters(books, request);
+
+            int totalPages = books.Sum(o => o.Pages);
+
+            books = ApplyPagination(books, request);
 
             var response = new Response();
 
             response.Items.Add("Records", books);
+
+            response.TotalPages = totalPages;
 
             return response;
         }
@@ -72,8 +77,8 @@ namespace AppService.DataLayer
 
         private static List<Tables.Book> ApplyPagination(List<Tables.Book> books, RequestGet request)
         {
-            int pageIndex = request.PageIndex.Value;
-            int pageSize = request.PageSize.Value;
+            int pageIndex = request.PageIndex ?? 1;
+            int pageSize = request.PageSize ?? 1;
 
             return books.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
         }
