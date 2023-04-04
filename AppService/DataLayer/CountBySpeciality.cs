@@ -104,6 +104,23 @@ namespace AppService.DataLayer
             return books;
         }
 
+        public static Response Delete(RequestDelete request, AppDbContext dbContext)
+        {
+            try
+            {
+                var item = dbContext.Book.FirstOrDefault(b => b.Id == request.Id);
+
+                dbContext.Book.Remove(item);
+                dbContext.SaveChanges();
+
+                return new Response { Items = { { "Result", "OK" } } };
+
+            }
+            catch (Exception ex)
+            {
+                return new Response { Items = { { "NotOK", ex.Message } } };
+            }
+        }
 
     }
 
