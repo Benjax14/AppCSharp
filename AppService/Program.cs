@@ -30,15 +30,16 @@ namespace AppService
                 //}
             };
 
-            //var response = DataLayer.Book.Get(request, dbContext);
-            //var bookSummary = (DataLayer.Book.BookSummary)response.Items["Summary"];
+            var response = DataLayer.Book.Get(request, dbContext);
 
-            //foreach (var book in (List<Tables.Book>)response.Items["Records"])
-            //{
-            //    Console.WriteLine("{0} - {1} ({2})", book.Name, book.Author.Name, book.Editorial.Name);
-            //}
+            var summary = response.Items["Summary"] as Tables.Book;
 
-            //Console.WriteLine(bookSummary.TotalPagesAllBooks);
+            foreach (var book in (List<Tables.Book>)response.Items["Records"])
+            {
+                Console.WriteLine("{0} - {1} ({2})", book.Name, book.Author.Name, book.Editorial.Name);
+            }
+
+            Console.WriteLine(summary.Pages);
 
             //var response = DataLayer.BookNameWithAuthor.Get(request, dbContext);
 
@@ -47,12 +48,12 @@ namespace AppService
             //    Console.WriteLine($"{item.BookName}, {item.AuthorName}");
             //}
 
-            var response = DataLayer.BookCountBySpeciality.Get(request, dbContext);
+            //var response = DataLayer.BookCountBySpeciality.Get(request, dbContext);
 
-            foreach (var item in (List<Views.BookCountBySpeciality>)response.Items["Records"])
-            {
-                Console.WriteLine($"{item.Speciality}, {item.BookCount}");
-            }
+            //foreach (var item in (List<Views.BookCountBySpeciality>)response.Items["Records"])
+            //{
+            //    Console.WriteLine($"{item.Speciality}, {item.BookCount}");
+            //}
 
 
             Console.ReadLine();

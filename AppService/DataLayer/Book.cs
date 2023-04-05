@@ -20,12 +20,11 @@ namespace AppService.DataLayer
             query = ApplyFilters(query, request);
 
 
-            var summary = new Book.BookSummary
-            {
-                TotalPages = query.Sum(b => b.Pages),
-                TotalRecords = query.Count(),
-                TotalPagesAllBooks = query.Sum(b => b.Pages),
+            var totalPages = query.Sum(b => b.Pages);
 
+            var summary = new Tables.Book
+            {
+                Pages = totalPages
             };
 
             query = ApplyPagination(query, request);
@@ -42,13 +41,6 @@ namespace AppService.DataLayer
             return response;
         }
 
-
-        public class BookSummary
-        {
-            public int TotalPages { get; set; }
-            public int TotalRecords { get; set; }
-            public int TotalPagesAllBooks { get; set; }
-        }
 
         private static IQueryable<Tables.Book> ApplySorting(IQueryable<Tables.Book> query, RequestGet request)
         {
