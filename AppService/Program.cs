@@ -3,60 +3,38 @@ using AppService.Tables;
 using AppService.Tables.Enums;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using static AppService.DataLayer.Book;
+using Vectork.Utilities;
+using System.Text.Json;
 
 namespace AppService
 {
-    internal class Program
+    class Program
     {
+        public static SocketsServer _Server;
         static void Main(string[] args)
         {
+            Console.WriteLine("------SERVER------");
+
+            _Server = new SocketsServer("localhost",4000);
+            _Server.DataReceived += OnDataReceived;
+
+            _Server.Connect();
+
+            Console.WriteLine("Press any key");
+            Console.ReadLine();
+
+        }
+
+        private static void OnDataReceived(object sender, string e)
+        {
+            var requestGet = JsonSerializer.Deserialize<RequestGet>(e);
 
             var dbContext = new AppDbContext();
-            //PoblateDatabase(dbContext);
+            var response = DataLayer.Book.Get(requestGet, dbContext);
 
-            var request = new RequestGet()
-            {
-                OrderDirection = OrderDirection.Descending,
-                PageIndex = 1,
-                PageSize = 100,
-                //Filters = new List<RequestFilter>
-                //{
-                //    new RequestFilter()
-                //    {
-                //        PropertyName = nameof(Tables.Book.Type),
-                //        Comparer = Comparer.Equal,
-                //        Value = SpecialtyType.Maths.ToString()
-                //    }
-                //}
-            };
+            var responseJson = JsonSerializer.Serialize(response);
 
-            var response = DataLayer.Book.Get(request, dbContext);
-
-            var summary = response.Items["Summary"] as Tables.Book;
-
-            foreach (var book in (List<Tables.Book>)response.Items["Records"])
-            {
-                Console.WriteLine("{0} - {1} ({2})", book.Name, book.Author.Name, book.Editorial.Name);
-            }
-
-            Console.WriteLine(summary.Pages);
-
-            //var response = DataLayer.BookNameWithAuthor.Get(request, dbContext);
-
-            //foreach(var item in (List<Views.BookNameWithAuthor>)response.Items["Records"])
-            //{
-            //    Console.WriteLine($"{item.BookName}, {item.AuthorName}");
-            //}
-
-            //var response = DataLayer.BookCountBySpeciality.Get(request, dbContext);
-
-            //foreach (var item in (List<Views.BookCountBySpeciality>)response.Items["Records"])
-            //{
-            //    Console.WriteLine($"{item.Speciality}, {item.BookCount}");
-            //}
-
-
-            Console.ReadLine();
+            _Server.Send(responseJson);
         }
 
         public static void PoblateDatabase(AppDbContext dBContext)
