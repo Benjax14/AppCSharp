@@ -66,10 +66,22 @@ namespace AppService.DataLayer
 
         private static IQueryable<Tables.Book> ApplyPagination(IQueryable<Tables.Book> books, RequestGet request)
         {
-            int pageIndex = request.PageIndex ?? 1;
-            int pageSize = request.PageSize ?? 1;
+            if (books == null)
+            {
+                return books;
+            }
 
-            return books.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+            int? pageIndex = request.PageIndex;
+            int? pageSize = request.PageSize;
+
+            if (pageIndex == null || pageSize == null)
+            {
+                return books;
+            }
+
+            int startIndex = (pageIndex.Value - 1) * pageSize.Value;
+            return books.Skip(startIndex).Take(pageSize.Value);
+
         }
 
         private static IQueryable<Tables.Book> ApplyFilters(IQueryable<Tables.Book> query, RequestGet request)
@@ -97,24 +109,5 @@ namespace AppService.DataLayer
             }
             return query;
         }
-
-        public static Response Delete(RequestDelete request, AppDbContext dbContext)
-        {
-            try
-            {
-                var item = dbContext.Book.FirstOrDefault(b => b.Id == request.Id);
-
-                dbContext.Book.Remove(item);
-                dbContext.SaveChanges();
-
-                return new Response { Items = { { "Result", "OK" } } };
-
-            }
-            catch (Exception ex)
-            {
-                return new Response { Items = { { "NotOK", ex.Message } } };
-            }
-        }
-
     }
 }

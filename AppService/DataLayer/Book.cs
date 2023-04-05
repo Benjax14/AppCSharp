@@ -1,4 +1,5 @@
 ﻿using AppService.Tables;
+using AppService.Tables.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,26 +18,36 @@ namespace AppService.DataLayer
 
             query = ApplySorting(query, request);
             query = ApplyFilters(query, request);
+
+
+            var summary = new Book.BookSummary
+            {
+                TotalPages = query.Sum(b => b.Pages),
+                TotalRecords = query.Count(),
+                TotalPagesAllBooks = query.Sum(b => b.Pages),
+
+            };
+
             query = ApplyPagination(query, request);
 
             var books = query.ToList();
-
-            int totalRecords = books.Count;
-            int totalPages = (int)Math.Ceiling((decimal)(totalRecords / request.PageSize));
 
             var response = new Response();
 
             response.Items.Add("Records", books);
 
-            var summary = new
-            {
-                TotalPages = books.Sum(b => b.Pages)
-            };
-
             response.Items.Add("Summary", summary);
 
 
             return response;
+        }
+
+
+        public class BookSummary
+        {
+            public int TotalPages { get; set; }
+            public int TotalRecords { get; set; }
+            public int TotalPagesAllBooks { get; set; }
         }
 
         private static IQueryable<Tables.Book> ApplySorting(IQueryable<Tables.Book> query, RequestGet request)
@@ -85,10 +96,22 @@ namespace AppService.DataLayer
 
         private static IQueryable<Tables.Book> ApplyPagination(IQueryable<Tables.Book> books, RequestGet request)
         {
-            int pageIndex = request.PageIndex ?? 1;
-            int pageSize = request.PageSize ?? 1;
+            if (books == null)
+            {
+                return books;
+            }
 
-            return books.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+            int? pageIndex = request.PageIndex;
+            int? pageSize = request.PageSize;
+
+            if (pageIndex == null || pageSize == null)
+            {
+                return books;
+            }
+
+            int startIndex = (pageIndex.Value - 1) * pageSize.Value;
+            return books.Skip(startIndex).Take(pageSize.Value);
+
         }
 
         private static IQueryable<Tables.Book> ApplyFilters(IQueryable<Tables.Book> books, RequestGet request)
@@ -143,13 +166,26 @@ namespace AppService.DataLayer
                         break;
                     case nameof(Tables.Book.Type):
 
-                        if (filter.Comparer == Comparer.Equal)
+                        if(filter.PropertyName == nameof(Tables.Book.Type) && filter.Comparer == Comparer.Equal)
                         {
-                            Type typeFilter = Type.GetType(filter.Value);
-                            if (typeFilter != null && typeFilter.IsEnum) 
-                                books = books.Where(o => o.Type.GetType() == typeFilter);
-                            else
-                                return books;
+                            var enumValue = filter.Value;
+
+
+                            switch (enumValue)
+                            {
+                                case "Maths":
+                                    books = books.Where(o => o.Type == SpecialtyType.Maths);
+                                    break;
+                                case "Literature":
+                                    books = books.Where(o => o.Type == SpecialtyType.Literature);
+                                    break;
+                                case "Chemistry":
+                                    books = books.Where(o => o.Type == SpecialtyType.Chemistry);
+                                    break;
+                                case "Physics":
+                                    books = books.Where(o => o.Type == SpecialtyType.Physics);
+                                    break;
+                            }
                         }
 
                         break;

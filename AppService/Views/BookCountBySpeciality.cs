@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace AppService.Views
 {
-    public class CountBySpeciality
+    public class BookCountBySpeciality
     {
         public int Id { get; set; }
         public SpecialtyType Speciality { get; set; }
-        public int CountSpeciality { get; set; }
+        public int BookCount { get; set; }
     }
 }

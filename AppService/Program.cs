@@ -2,6 +2,7 @@
 using AppService.Tables;
 using AppService.Tables.Enums;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static AppService.DataLayer.Book;
 
 namespace AppService
 {
@@ -18,16 +19,26 @@ namespace AppService
                 OrderDirection = OrderDirection.Descending,
                 PageIndex = 1,
                 PageSize = 100,
+                //Filters = new List<RequestFilter>
+                //{
+                //    new RequestFilter()
+                //    {
+                //        PropertyName = nameof(Tables.Book.Type),
+                //        Comparer = Comparer.Equal,
+                //        Value = SpecialtyType.Maths.ToString()
+                //    }
+                //}
             };
 
-            //var response = DataLayer.Book.Get(request,dbContext);
+            //var response = DataLayer.Book.Get(request, dbContext);
+            //var bookSummary = (DataLayer.Book.BookSummary)response.Items["Summary"];
 
             //foreach (var book in (List<Tables.Book>)response.Items["Records"])
             //{
             //    Console.WriteLine("{0} - {1} ({2})", book.Name, book.Author.Name, book.Editorial.Name);
             //}
 
-            //Console.WriteLine(response.Items["Summary"]);
+            //Console.WriteLine(bookSummary.TotalPagesAllBooks);
 
             //var response = DataLayer.BookNameWithAuthor.Get(request, dbContext);
 
@@ -36,13 +47,13 @@ namespace AppService
             //    Console.WriteLine($"{item.BookName}, {item.AuthorName}");
             //}
 
-            var response = DataLayer.CountBySpeciality.Get(request, dbContext);
+            var response = DataLayer.BookCountBySpeciality.Get(request, dbContext);
 
-            foreach(var item in (List<Views.CountBySpeciality>)response.Items["Records"])
+            foreach (var item in (List<Views.BookCountBySpeciality>)response.Items["Records"])
             {
-                Console.WriteLine($"{item.Speciality}, {item.CountSpeciality}");
+                Console.WriteLine($"{item.Speciality}, {item.BookCount}");
             }
-            
+
 
             Console.ReadLine();
         }
