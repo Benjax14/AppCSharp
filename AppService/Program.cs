@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using static AppService.DataLayer.Book;
 using Vectork.Utilities;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppService
 {
@@ -27,14 +28,43 @@ namespace AppService
 
         private static void OnDataReceived(object sender, string e)
         {
-            var requestGet = JsonSerializer.Deserialize<RequestGet>(e);
+            try
+            {
+                var request = JsonSerializer.Deserialize<Request>(e);
+                Response response = null;
+                var dbContext = new AppDbContext();
 
-            var dbContext = new AppDbContext();
-            var response = DataLayer.Book.Get(requestGet, dbContext);
 
-            var responseJson = JsonSerializer.Serialize(response);
 
-            _Server.Send(responseJson);
+                switch (request.MethodName)
+                {
+                    case "Get":
+                        var requestGet = JsonSerializer.Deserialize<RequestGet>(request.InnerRequestJson);
+
+                        if (request.EntityName == "Book")
+                        {
+                            response = AppService.DataLayer.Book.Get(requestGet, dbContext);
+                        }
+                        break;
+                    case "Save":
+                        var requestSave = JsonSerializer.Deserialize<RequestSave>(request.InnerRequestJson);
+                        response = AppService.DataLayer.Book.Save(requestSave, dbContext);
+                        break;
+                    case "Delete":
+                        var requestDelete = JsonSerializer.Deserialize<RequestDelete>(request.InnerRequestJson);
+                        response = AppService.DataLayer.Book.Delete(requestDelete, dbContext);
+                        break;
+                }
+
+
+                var responseJson = JsonSerializer.Serialize(response);
+
+                _Server.Send(responseJson);
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+
         }
 
         public static void PoblateDatabase(AppDbContext dBContext)
