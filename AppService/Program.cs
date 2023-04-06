@@ -44,6 +44,12 @@ namespace AppService
                         if (request.EntityName == "Book")
                         {
                             response = AppService.DataLayer.Book.Get(requestGet, dbContext);
+                        }else if(request.EntityName == "BookCountBySpeciality")
+                        {
+                            response = AppService.DataLayer.BookCountBySpeciality.Get(requestGet, dbContext);
+                        }else if (request.EntityName == "BookNameWithAuthor")
+                        {
+                            response = AppService.DataLayer.BookNameWithAuthor.Get(requestGet, dbContext);
                         }
                         break;
                     case "Save":
