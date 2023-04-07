@@ -35,31 +35,46 @@ namespace AppService
                 var dbContext = new AppDbContext();
 
 
+                //switch (request.MethodName)
+                //{
+                //    case "Get":
+                //        var requestGet = JsonSerializer.Deserialize<RequestGet>(request.InnerRequestJson);
 
-                switch (request.MethodName)
+                //        if (request.EntityName == "Book")
+                //        {
+                //            response = AppService.DataLayer.Book.Get(requestGet, dbContext);
+                //        }else if(request.EntityName == "BookCountBySpeciality")
+                //        {
+                //            response = AppService.DataLayer.BookCountBySpeciality.Get(requestGet, dbContext);
+                //        }else if (request.EntityName == "BookNameWithAuthor")
+                //        {
+                //            response = AppService.DataLayer.BookNameWithAuthor.Get(requestGet, dbContext);
+                //        }
+                //        break;
+                //    case "Save":
+                //        var requestSave = JsonSerializer.Deserialize<RequestSave>(request.InnerRequestJson);
+                //        response = AppService.DataLayer.Book.Save(requestSave, dbContext);
+                //        break;
+                //    case "Delete":
+                //        var requestDelete = JsonSerializer.Deserialize<RequestDelete>(request.InnerRequestJson);
+                //        response = AppService.DataLayer.Book.Delete(requestDelete, dbContext);
+                //        break;
+                //}
+
+                var typeName = $"AppService.DataLayer.{request.EntityName}";
+
+                var type = Type.GetType(typeName);
+
+                if (type != null)
                 {
-                    case "Get":
-                        var requestGet = JsonSerializer.Deserialize<RequestGet>(request.InnerRequestJson);
+                    var method = type.GetMethod(request.MethodName);
 
-                        if (request.EntityName == "Book")
-                        {
-                            response = AppService.DataLayer.Book.Get(requestGet, dbContext);
-                        }else if(request.EntityName == "BookCountBySpeciality")
-                        {
-                            response = AppService.DataLayer.BookCountBySpeciality.Get(requestGet, dbContext);
-                        }else if (request.EntityName == "BookNameWithAuthor")
-                        {
-                            response = AppService.DataLayer.BookNameWithAuthor.Get(requestGet, dbContext);
-                        }
-                        break;
-                    case "Save":
-                        var requestSave = JsonSerializer.Deserialize<RequestSave>(request.InnerRequestJson);
-                        response = AppService.DataLayer.Book.Save(requestSave, dbContext);
-                        break;
-                    case "Delete":
-                        var requestDelete = JsonSerializer.Deserialize<RequestDelete>(request.InnerRequestJson);
-                        response = AppService.DataLayer.Book.Delete(requestDelete, dbContext);
-                        break;
+                    if (method != null)
+                    {
+                        var requestObj = JsonSerializer.Deserialize(request.InnerRequestJson, method.GetParameters()[0].ParameterType);
+
+                        response = (Response)method.Invoke(null, new object[] { requestObj, dbContext });
+                    }
                 }
 
 
